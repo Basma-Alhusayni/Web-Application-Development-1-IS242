@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>insert</title>
+</head>
+
+<body>
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" name="title" id="ti" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" class="form-control" name="description" id="de" required />
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" name="price" id="pr" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Catagory</label>
+        <select class="form-control" name="cata" id="ca">
+            <option value="0">Please select</option>
+            <option value="1">Computer Science</option>
+            <option value="2">Information Technology</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Select picture:</label>
+        <input type="file" id="ff" class="form-control" accept="image/png, image/jpeg">
+    </div>
+    <button onclick="insert()">SEND</button>
+    <div id="res"></div>
+    <script>
+        async function insert() {
+            var ti = document.getElementById('ti').value;
+            var de = document.getElementById("de").value;
+            var pr = document.getElementById("pr").value;
+            var ca = document.getElementById("ca").value;
+
+            var input = document.getElementById('ff')
+            var data = new FormData()
+            data.append('upfile', input.files[0]);
+            data.append('title', ti);
+            data.append('description', de);
+            data.append('price', pr);
+            data.append('cata', ca);
+
+            let options = {
+                method: 'POST',
+                body: data
+            }
+            let response = await fetch("http://127.0.0.1:5000/process_insert", options);
+            let message = await response.text();
+            document.getElementById("res").innerHTML = message;
+        } 
+    </script>
+</body>
+
+</html>

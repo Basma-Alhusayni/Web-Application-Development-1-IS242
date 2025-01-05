@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    <title>buy</title>
+</head>
+
+<body>
+    <div class="row" id="demo"></div>
+    <div id="res"></div>
+    <script>
+        getText("http://127.0.0.1:5000/process_index");
+        async function getText(url) {
+            let response = await fetch(url);
+            let x = await response.json();
+            var ta = "";
+            for (i = 0; i < x.length; i++) {
+                ta += "<div class='col-md-3 animateanimated animatefadeInUpBig '>";
+                ta += "<div class='card'>";
+                ta += "<div class='card-header bg-warning text-center'>" + x[i].id + "</div>";
+                ta += "<div class='card-body'>" + x[i].title + "<br>Price: " + x[i].price + "</div>";
+                ta += "<div class='card-footer'> <button class='btn btn-info'  onclick=buy('" + x[i].price + "')  >buy</button> </div>";
+                ta += "</div> </div>";
+            }
+            document.getElementById("demo").innerHTML = ta;
+        }
+        async function buy(bprice) {
+            var cid = "100";
+
+            var bprice = bprice;
+            order = { customerid: cid, bookprice: bprice }
+            let options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(order)
+            }
+            let response = await fetch("http://127.0.0.1:5000/process_buy", options);
+            let message = await response.text();
+            document.getElementById("res").innerHTML = message;
+        }  
+    </script>
+</body>
+
+</html>

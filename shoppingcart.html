@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Shopping Cart</title>
+    <script src="navbar.js" defer></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('/getUserRole')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.role === 'customer') {
+                        loadCustomerNavbar();
+                    } else if (data.role === 'admin') {
+                        loadAdminNavbar();
+                    }
+                })
+                .catch(error => console.error('Error fetching user role:', error));
+        });
+    </script>
+    <style>
+        body {
+            padding-top: 70px;
+        }
+
+        .form-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div id="navbar"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="container-fluid mt-3">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mt-5">
+        <div class="form-group form-container">
+            <label for="productSelect">Enter Product Name:</label>
+            <input type="text" id="productSelect" class="form-control mb-2" list="productList" onchange="getprice()">
+            <datalist id="productList"></datalist>
+            <label for="num">Enter Quantity:</label>
+            <input type="number" id="num" class="form-control mb-2" size="5">
+            <button onclick="add()" class="btn btn-primary mb-2">Buy</button>
+        </div>
+        <div id="notFoundMessage" class="text-danger"></div>
+        <div id="lbl1" class="mb-3"></div>
+        <table id="tbl" class="table table-bordered"></table>
+        <button onclick="checkout()" class="btn btn-primary mt-3">Check out</button>
+    </div>
+    <script>
+        let pp = "";
+        let des = "";
+        let cartItems = [];
+
+        async function fetchProducts() {
+            const response = await fetch("http://127.0.0.1:5000/products");
+            if (response.ok) {
+                const products = await response.json();
+                const productList = document.getElementById('productList');
+                productList.innerHTML = products.map(product => `<option value="${product.itemname}">`).join('');
+            } else {
+                console.error("Failed to fetch product list");
+            }
+        }
+
+        async function getprice() {
+            const title = document.getElementById("productSelect").value;
+            const response = await fetch(`http://127.0.0.1:5000/process_detail?id=${encodeURIComponent(title)}`);
+            if (response.ok) {
+                const data = await response.json();
+                pp = data.price;
+                des = data.description;
+                document.getElementById("lbl1").innerText = `Price: ${pp}`;
+                document.getElementById("notFoundMessage").innerText = "";
+            } else {
+                pp = "no product was found";
+                document.getElementById("lbl1").innerText = "";
+                document.getElementById("notFoundMessage").innerText = "Product Not Found";
+            }
+        }
+
+
+        function add() {
+            const itemName = document.getElementById("productSelect").value;
+            const quantity = document.getElementById("num").value;
+            if (pp === "no product was found") {
+                document.getElementById("notFoundMessage").innerText = "Product Not Found";
+                return;
+            }
+            const item = {
+                name: itemName,
+                price: parseFloat(pp),
+                description: des,
+                quant: parseInt(quantity, 10),
+            };
+            cartItems.push(item); // Changed from let cartItems to cartItems
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            display();
+            document.getElementById("lbl1").innerText = "";
+            document.getElementById("productSelect").value = "";
+            document.getElementById("num").value = "";
+            document.getElementById("notFoundMessage").innerText = "";
+            updateCartBadge();
+        }
+
+        function display() {
+            // Removed let from cartItems
+            cartItems = JSON.parse(localStorage.getItem('cartItems')) || []; // Ensure cartItems is consistent
+            let ta = "";
+            for (let i = 0; i < cartItems.length; i++) {
+                ta += `<tr>
+                <td>${cartItems[i].name}</td>
+                <td>${cartItems[i].description}</td>
+                <td>${cartItems[i].price}</td>
+                <td>${cartItems[i].quant}</td>
+                <td><button onclick="del('${cartItems[i].name}')" class="btn btn-danger">Delete</button></td>
+            </tr>`;
+            }
+            if (ta !== "") {
+                ta = "<tr><th>Name</th><th>Description</th><th>Price</th><th>Quantity</th><th>Delete</th></tr>" + ta;
+            }
+            document.getElementById("tbl").innerHTML = ta;
+        }
+
+        function del(name) {
+            // Removed let from cartItems
+            cartItems = cartItems.filter(item => item.name !== name);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            display();
+            updateCartBadge();
+        }
+
+        function checkout() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const total = cartItems.reduce((sum, item) => sum + (item.price * item.quant), 0);
+            localStorage.setItem('total', total);
+            localStorage.setItem('itemNumbers', cartItems.length.toString());
+            localStorage.removeItem('cartItems');
+            display();
+            updateCartBadge();
+            Swal.fire({
+                title: 'Thank you!',
+                text: 'Your order has been placed successfully.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+        }
+
+        function updateCartBadge() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const itemNumbers = cartItems.length;
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) {
+                cartBadge.textContent = itemNumbers;
+            }
+        }
+
+        function loadCart() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            display();
+            updateCartBadge();
+        }
+
+        fetchProducts();
+        loadCart();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+{
+    "weather": [
+        {
+            "id": 804,
+            "main": "Clouds",
+            "description": "overcast clouds",
+            "icon": "04n"
+        }
+    ],
+    "main": {
+        "temp": 292.15,
+        "pressure": 1023,
+        "humidity": 72,
+        "temp_min": 291.15,
+        "temp_max": 293.15
+    },
+    "visibility": 14484,
+    "wind": {
+        "speed": 5.7,
+        "deg": 130
+    }
+}

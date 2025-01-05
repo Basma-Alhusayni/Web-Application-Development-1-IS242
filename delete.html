@@ -1,0 +1,30 @@
+<html lang="en">
+<title>delete</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<body>
+    Book title: <input type="text" id="title"> <br>
+    <div id="res"></div>
+    <button type="button" onclick="deletetbook()">Delete</button>
+    <script>
+        async function deletetbook() {
+            var tt = document.getElementById('title').value;
+            let options = {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+            }
+            let response = await fetch("http://127.0.0.1:5000/process_delete?title=" + tt, options);
+            let message = await response.text();
+            Swal.fire({
+                icon: 'success',
+                title: message,
+                showConfirmButton: false,
+                timer: 1500
+            })
+        }
+    </script>
+</body>
+
+</html>

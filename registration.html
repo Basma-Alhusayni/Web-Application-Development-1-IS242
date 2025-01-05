@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registeration</title>
+</head>
+
+<body>
+    <form action="process.php" method="post">
+        <h1> <strong>Registeration Form</strong></h1>
+        <input type="text" name="name" id="name" placeholder="Your name" required>
+        <input type="number" name="age" id="age" placeholder="Age" min="10" max="80" size="2"> <br>
+        <label>Birthdate</label>
+        <input type="date" name="date" id="date"> <br>
+        <label>Select your favorite color:</label>
+        <input type="color" name="color" id="color"> <br>
+        <input type="email" name="email" id="email" placeholder="@mail" required><br>
+        <input type="password" name="password" id="password" placeholder="Password (6)" required maxlength="6"> <br>
+        <label>University year:</label>
+        <select name="uni year" id="uni year">
+            <option>Year one</option>
+            <option>Year two</option>
+            <option>Year three</option>
+            <option>Year four</option>
+            <option>Year five</option>
+        </select> <br>
+        <label>Gender:</label>
+        <input type="radio" name="gender" id="male" value="male"> Male
+        <input type="radio" name="gender" id="female" value="female" checked> Female <br>
+        <label>Do you agree to the rules of the website:</label>
+        <input type="checkbox" name="rules" id="rules" value="yes" required> YES, I Agree. <br>
+        <textarea> </textarea><br>
+        <input type="reset" value="clear">
+        <input type="image" src="images/submit.png" alt="submit" height="50" width="80">
+    </form>
+</body>
+
+</html>

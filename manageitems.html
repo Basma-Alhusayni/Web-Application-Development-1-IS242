@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="navbar.js" defer></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('/getUserRole')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.role === 'customer') {
+                        loadCustomerNavbar();
+                    } else if (data.role === 'admin') {
+                        loadAdminNavbar();
+                    }
+                })
+                .catch(error => console.error('Error fetching user role:', error));
+        });
+    </script>
+    <style>
+        .btn-same-width {
+            width: 80px;
+        }
+
+        #insert{
+            width: 50%;  /* Adjusted width */
+            height: 50%;  /* Adjusted height */
+            font-size: 24px;
+
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid" style="margin-bottom: 120px;">
+        <nav id="navbar"></nav>
+    </div>
+    <div class="d-flex justify-content-center mb-4">
+        <button class="btn btn-primary" id="insert" onclick="openInsertForm()">Click here to insert an item</button>
+    </div>
+    <table class="table table-striped" id="demo"></table>
+
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getList(url) {
+            var response = await fetch(url);
+            var x = await response.json();
+            var ta = "<tr><th>Id</th><th>Name</th><th>Description</th><th>Price</th><th>Category</th><th>Action</th></tr>";
+            for (i = 0; i < x.length; i++) {
+                ta += "<tr> <td>" + x[i].id + "</td><td>" + x[i].itemname + "</td><td>" +
+                    x[i].description + "</td><td>" + x[i].price + "</td><td>" + x[i].cata + "</td>" +
+                    "<td>" +
+                    "<button type='button' onclick=getDetail('" + x[i].id + "') class='btn btn-info'>Detail</button>" +
+                    "<button type='button' onclick=editItem('" + x[i].id + "') class='btn btn-warning'>Edit</button>" +
+                    "<button type='button' onclick=deleteItem(" + x[i].id + ") class='btn btn-danger'>Delete</button>" +
+                    "</td></tr>";
+            }
+            document.getElementById("demo").innerHTML = ta;
+        }
+
+        window.onload = function () {
+            getList("http://127.0.0.1:5000/getItems");
+        }
+
+        async function getDetail(itemId) {
+            var response = await fetch('http://127.0.0.1:5000/manage_item?id=' + encodeURIComponent(itemId));
+            var x = await response.json();
+            var modalContent = "<div><strong>Name: </strong>" + x.itemname + "</div>";
+            modalContent += "<div><strong>Description: </strong>" + x.description + "</div>";
+            modalContent += "<div><strong>Price: </strong>" + x.price + "</div>";
+            modalContent += "<div><strong>Category: </strong>" + x.cata + "</div>";
+            modalContent += "<div><strong>Image: </strong><br><img src='img/" + x.image + "' alt='" + x.itemname + "' style='max-width: 200px;'></div>";
+            modalContent += "<button type='button' class='btn btn-danger' data-dismiss='modal'>Close</button>";
+            $("#myModal .modal-title").text("Item Detail");
+            $("#myModal .modal-body").html(modalContent);
+            $("#myModal").modal("show");
+        }
+
+
+        async function deleteItem(id) {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#27AE60',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes',
+                cancelButtonText: 'Cancel',
+                customClass: {
+                    confirmButton: 'btn-same-width',
+                    cancelButton: 'btn-same-width'
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch("http://127.0.0.1:5000/deleteItem?id=" + id, {
+                            method: 'DELETE'
+                        });
+                        if (response.ok) {
+                            Swal.fire(
+                                'Deleted!',
+                                'Your item has been deleted.',
+                                'success'
+                            );
+                            getList("http://127.0.0.1:5000/getItems");
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to delete the item.',
+                                'error'
+                            );
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while deleting the item.',
+                            'error'
+                        );
+                    }
+                }
+            });
+        }
+
+        function openInsertForm() {
+            var modalContent = "<div class='form-group'><label for='itemname'>Name:</label><input type='text' name='itemname' class='form-control' id='ti' /></div>";
+            modalContent += "<div class='form-group'><label for='description'>Description:</label><input type='text' class='form-control' id='de' /></div>";
+            modalContent += "<div class='form-group'><label for='price'>Price:</label><input type='text' class='form-control' id='pr' /></div>";
+            modalContent += "<div class='form-group'><label class='control-label'>Category:</label><select class='form-control' id='ca'><option value='0'>Please select</option><option value='Food'>Food</option><option value='Grooming'>Grooming</option><option value='Beds'>Beds</option><option value='Litter'>Litter</option><option value='Clothes'>Clothes</option><option value='Toys'>Toys</option></select></div>";
+            modalContent += "<div id='picd' class='form-group'><label>Select picture:</label><input type='file' id='ff' class='form-control' accept='image/png, image/jpeg'></div>";
+            modalContent += "<div class='row'><div class='col'><button id='insertBtn' class='btn btn-success btn-block'>Insert</button></div>";
+            modalContent += "<div class='col'><button type='button' class='btn btn-danger btn-block' data-dismiss='modal'>Close</button></div></div>";
+            $("#myModal .modal-title").text("Insert Item");
+            $("#myModal .modal-body").html(modalContent);
+            $("#insertBtn").click(insertItem);
+            $("#myModal").modal("show");
+        }
+
+
+        function insertItem() {
+            const itemname = document.getElementById("ti").value;
+            const description = document.getElementById("de").value;
+            const price = document.getElementById("pr").value;
+            const cata = document.getElementById("ca").value;
+            const image = document.getElementById("ff").files[0];
+            const formData = new FormData();
+            formData.append('itemname', itemname);
+            formData.append('description', description);
+            formData.append('price', price);
+            formData.append('cata', cata);
+            formData.append('image', image);
+
+            fetch('http://127.0.0.1:5000/insertItem', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    if (data.message === "Item inserted successfully") {
+                        Swal.fire(
+                            'Success!',
+                            'Item inserted successfully.',
+                            'success'
+                        );
+                        getList("http://127.0.0.1:5000/getItems");
+                        $("#myModal").modal("hide");
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'Failed to insert the item.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while inserting the item.',
+                        'error'
+                    );
+                });
+        }
+        async function editItem(itemId) {
+            var response = await fetch('http://127.0.0.1:5000/manage_item?id=' + encodeURIComponent(itemId));
+            var item = await response.json();
+
+            var modalContent = "<div class='form-group'><label for='itemname'>Name:</label><input type='text' name='itemname' class='form-control' id='ti' value='" + item.itemname + "'/></div>";
+            modalContent += "<div class='form-group'><label for='description'>Description:</label><input type='text' class='form-control' id='de' value='" + item.description + "'/></div>";
+            modalContent += "<div class='form-group'><label for='price'>Price:</label><input type='text' class='form-control' id='pr' value='" + item.price + "'/></div>";
+            modalContent += "<div class='form-group'><label class='control-label'>Category:</label><select class='form-control' id='ca'><option value='Food' " + (item.cata === 'Food' ? 'selected' : '') + ">Food</option><option value='Grooming' " + (item.cata === 'Grooming' ? 'selected' : '') + ">Grooming</option><option value='Beds' " + (item.cata === 'Beds' ? 'selected' : '') + ">Beds</option><option value='Litter' " + (item.cata === 'Litter' ? 'selected' : '') + ">Litter</option><option value='Clothes' " + (item.cata === 'Clothes' ? 'selected' : '') + ">Clothes</option><option value='Toys' " + (item.cata === 'Toys' ? 'selected' : '') + ">Toys</option></select></div>";
+            modalContent += "<div class='row'><div class='col'><button id='updateBtn' onclick='updateItem(" + item.id + ")' class='btn btn-success btn-block'>Update</button></div>";
+            modalContent += "<div class='col'><button type='button' class='btn btn-danger btn-block' data-dismiss='modal'>Close</button></div></div>";
+
+            $("#myModal .modal-title").text("Edit Item");
+            $("#myModal .modal-body").html(modalContent);
+            $("#myModal").modal("show");
+        }
+        function updateItem(id) {
+            const itemname = document.getElementById("ti").value;
+            const description = document.getElementById("de").value;
+            const price = document.getElementById("pr").value;
+            const cata = document.getElementById("ca").value;
+
+            const payload = { itemname, description, price, cata };
+            console.log('Sending update request with payload:', payload);
+
+            fetch('http://127.0.0.1:5000/updateItem?id=' + id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Server response:', data);
+                    if (data.message === "Item updated successfully") {
+                        Swal.fire(
+                            'Success!',
+                            'Item updated successfully.',
+                            'success'
+                        );
+                        getList("http://127.0.0.1:5000/getItems");
+                        $("#myModal").modal("hide");
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            data.message || 'Failed to update the item.',
+                            'error'
+                        );
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire(
+                        'Error!',
+                        'An error occurred while updating the item.',
+                        'error'
+                    );
+                });
+        }
+
+    </script>
+</body>
+
+</html>

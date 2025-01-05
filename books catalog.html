@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books Catalog</title>
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .card {
+      height: 250;
+    }
+
+    .card-img {
+      height: 50;
+      width: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="row justify-content-center">
+      <h1>Book Catalog</h1>
+    </div>
+    <div class="row" id="catl"></div>
+  </div>
+
+  <script>
+    getText('books.json');
+
+    async function getText(url) {
+      try {
+        const response = await fetch(url);
+        const books = await response.json();
+
+        let html = "";
+        books.forEach(book => {
+          html += `
+            <div class="col">  <div class="card h-100">
+                <div class="card-header bg-warning text-center"> ${book.itemname} <br> <strong>Author:</strong> ${book.author}
+                </div>
+                <div class="card-body text-center">
+                  <img src="${book.image}" class="card-img-top img-fluid" alt="${book.itemname}" style="width: 250px; height: 250px;">
+                  <p class="card-text text-center"><strong>Decription:</strong> ${book.description}</p>
+                </div>
+                <div class="card-footer text-center"> <strong>Price:</strong> ${book.price}</div>
+              </div>
+            </div>
+          `;
+        });
+
+        document.getElementById("catl").innerHTML = html;
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+  </script>
+</body>
+
+</html>

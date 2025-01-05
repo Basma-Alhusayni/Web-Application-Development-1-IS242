@@ -1,0 +1,29 @@
+<html>
+<body>
+    <form action="home.html" id="LoginForm">
+        Enter name <input type="text" id="nn" autocomplete="off"> <br>
+        Enter password <input type="password" id="pp" autocomplete="off"> <br>
+        remember <input type="checkbox" id="cc" checked="true"> <br><br>
+        <input type="submit" value="send"><br>
+    </form>
+</body>
+<script>
+    nn.value = localStorage.getItem("name");
+    pp.value = localStorage.getItem("pass");
+    document.getElementById("LoginForm").onsubmit = function (e) {
+        if (nn.value != "aiman" || pp.value != "1234") {
+            e.preventDefault();
+            alert("user name or password is not matched");
+        }
+
+        if (cc.checked == true) {
+            localStorage.setItem("name", nn.value);
+            localStorage.setItem("pass", pp.value);
+        }
+        else {
+            localStorage.setItem("name", "");
+            localStorage.setItem("pass", "");
+        }
+    }; 
+</script>
+</html>

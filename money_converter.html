@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Money Converter</title>
+</head>
+
+<body>
+    <script>
+        function convertCurrency(currencyType, amount) {
+            var convertedAmount;
+            switch (currencyType) {
+                case 1:
+                    convertedAmount = amount * 0.27;
+                    break;
+                case 2:
+                    convertedAmount = amount * 1.03;
+                    break;
+                case 3:
+                    convertedAmount = amount * 0.75;
+                    break;
+                default:
+                    convertedAmount = 'Invalid currency choice';
+            }
+
+            return convertedAmount;
+        }
+
+        var currencyChoice = parseInt(prompt('Enter your currency choice:\n1 - SAR to USD Dollar\n2 - SAR to UAE Derham\n3 - SAR to Chinese Yuan'));
+        var sarAmount = parseFloat(prompt('Enter the amount in Saudi Riyal (SAR):'));
+
+        var convertedAmount = convertCurrency(currencyChoice, sarAmount);
+
+        document.body.innerHTML = '<h1>Money Conversion Result:</h1><p>' + sarAmount + ' SAR is equal to ' + convertedAmount + ' in the selected currency.</p>';
+    </script>
+</body>
+
+</html>

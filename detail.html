@@ -1,0 +1,62 @@
+<html>
+
+<head>
+    <title>search</title>
+</head>
+
+<body>
+
+    <div class="form-group">
+        <label for="title">Title:</label>
+        <input type="text" name="title" class="form-control" id="ti" />
+        <button onclick="getbook()">search</button>
+    </div>
+    <div class="form-group">
+        <label for="description">Description:</label>
+        <input type="text" class="form-control" name="description" id="de" />
+    </div>
+    <div class="form-group">
+        <label for="price">Price:</label>
+        <input type="number" name="price" class="form-control" id="pr" />
+    </div>
+    <div class="form-group">
+        <label class="control-label">Catagory</label>
+        <select class="form-control" name="cata" id="ca">
+            <option value="0">Please select</option>
+            <option value="1">Computer Science</option>
+            <option value="2">Information Technology</option>
+        </select>
+    </div>
+    <button onclick="update()">Update</button>
+    <div id="res"></div>
+    <script>
+        async function getbook() {
+            var dd = document.getElementById('ti').value;
+            var response = await fetch('http://127.0.0.1:5000/process_detail?title=' + dd);
+            var x = await response.json();
+            document.getElementById("de").value = x.description;
+            document.getElementById("pr").value = x.price;
+            document.getElementById("ca").value = x.cata
+        }
+        async function update() {
+            var ti = document.getElementById('ti').value;
+            var de = document.getElementById("de").value;
+            var pr = document.getElementById("pr").value;
+            var ca = document.getElementById("ca").value;
+            book = { title: ti, price: pr, description: de, cata: ca }
+            let options = {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(book)
+            }
+
+            let response = await fetch("http://127.0.0.1:5000/process_update", options);
+            let message = await response.text();
+            document.getElementById("res").innerHTML = message;
+        } 
+    </script>
+</body>
+
+</html>

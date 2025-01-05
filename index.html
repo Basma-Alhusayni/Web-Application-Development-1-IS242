@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Index</title>
+</head>
+
+<body>
+    <div class="container mt-3">
+        <div id="tb" class="mt-3"></div>
+    </div>
+    
+    <script>
+        getText('http://127.0.0.1:5000/process_index');
+        async function getText(url) {
+            var response = await fetch(url);
+            var data = await response.json();
+            var table = "<table border='1' class= table-striped>";
+            table += "<thead class='thead-dark'><tr><th>Id</th><th>Title</th><th>Price</th><th>Category</th><th>Image</th></tr></thead><tbody>";
+            data.forEach(item => {
+                table += `<tr>
+                            <td>${item.id}</td>
+                            <td>${item.title}</td>
+                            <td>${item.price}</td>
+                            <td>${item.cata}</td>
+                            <td><img src="http://127.0.0.1:5000/${item.image}" width="50px"></td>
+                          </tr>`;
+            });
+            table += "</tbody></table>";
+            document.getElementById("tb").innerHTML = table;
+        }
+    </script>
+</body>
+
+</html>

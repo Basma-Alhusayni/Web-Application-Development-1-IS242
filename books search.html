@@ -1,0 +1,26 @@
+<html>
+<body>
+    Name: <select id="zz" onchange="show()"> </select>
+    <div id="res"></div>
+    <script>
+        getText('books.json');
+        async function getText(url) {
+            let response = await fetch(url);
+            let x = await response.json();
+            var dd = "";
+            for (i = 0; i < x.length; i++) {
+                dd += `<option value="${x[i].price}" data-image="${x[i].image}">${x[i].itemname}</option>`;
+            }
+            document.getElementById("zz").innerHTML = dd;
+        }
+        function show() {
+            var zz = document.getElementById("zz");
+            var ta = zz.options[zz.selectedIndex].text;
+            var pa = zz.value;
+            var image = zz.options[zz.selectedIndex].getAttribute('data-image');
+            var res = document.getElementById("res");
+            res.innerHTML = `<strong><p>You have selected </strong> ${ta} <br> <strong>Price: </strong>${pa}</p><img src="${image}" alt="${ta} Image" style="width: 150px; height: 200px;">`;
+        }
+    </script>
+</body>
+</html>

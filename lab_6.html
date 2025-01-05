@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Pizza Shop</title>
+</head>
+
+<body>
+    <div style="color: #FFFFFF; font-size: x-large; font-weight: bold; text-align: center; background-color: #339933;">
+        My Pizza Shop
+    </div>
+    <table style="width: 70%; margin-right: auto; margin-left: auto; background-color: #F0FFF0;">
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <img src="pizza.jpg" width="90%">
+            </td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold; text-align: center;">Size</td>
+            <td>
+                <select id="sizeSelect">
+                    <option value="10">Small</option>
+                    <option value="20">Medium</option>
+                    <option value="30">Large</option>
+                </select>
+                <p style="color: crimson; font-style: italic; font-weight: bolder; display: inline;">Large 30 SR, Medium
+                    20 SR, Small 10 SR</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">Quantity</td>
+            <td>
+                <input type="number" id="quantityInput" min="1">
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">Delivery</td>
+            <td>
+                <input type="radio" name="deliveryOption" value="Yes"> Yes
+                <input type="radio" name="deliveryOption" value="No"> No
+                <p style="color: crimson; font-style: italic; font-weight: bold;">10 SR Extra For Delivery</p>
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">Extra Orders</td>
+            <td>
+                <input type="checkbox" id="pepsiCheckbox">
+                <label for="pepsiCheckbox">Pepsi <span style="color: crimson; font-style: italic;font-weight: bold;">3
+                        SR</span></label><br>
+                <input type="checkbox" id="cheeseCheckbox">
+                <label for="cheeseCheckbox">Extra Cheese <span
+                        style="color: crimson; font-style: italic; font-weight: bold;">7 SR</span></label><br>
+                <input type="checkbox" id="sauceCheckbox">
+                <label for="sauceCheckbox">Sauce <span style="font-weight: bold; color: crimson; font-style: italic;">5
+                        SR</span></label>
+            </td>
+        </tr>
+
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <button onclick="calculate()"
+                    style="width: 250px;font-size: x-large; font-weight: bold; background-color: green; color: white; border-style: solid; padding: 10px 20px; cursor: pointer; border-radius: 5px;">BUY</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <label id="summaryLabel" style="text-align: left; display: inline-block;"></label>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <p id="totalLabel" style="font-weight: bolder; color: green; font-size:250%;"></p>
+            </td>
+        </tr>
+    </table>
+
+    <script>
+        function calculate() {
+            var sizeSelect = document.getElementById("sizeSelect");
+            var quantityInput = document.getElementById("quantityInput");
+            var deliveryOption = document.querySelector('input[name="deliveryOption"]:checked');
+            var totalLabel = document.getElementById("totalLabel");
+            var summaryLabel = document.getElementById("summaryLabel");
+
+            var size = sizeSelect.options[sizeSelect.selectedIndex].text;
+            var quantity = quantityInput.value;
+            var delivery = deliveryOption ? deliveryOption.value : "No";
+            var extraOrders = [];
+
+            var pepsiCheckbox = document.getElementById("pepsiCheckbox");
+            var cheeseCheckbox = document.getElementById("cheeseCheckbox");
+            var sauceCheckbox = document.getElementById("sauceCheckbox");
+
+            if (pepsiCheckbox.checked) {
+                extraOrders.push("Pepsi");
+            }
+            if (cheeseCheckbox.checked) {
+                extraOrders.push("Extra Cheese");
+            }
+            if (sauceCheckbox.checked) {
+                extraOrders.push("Sauce");
+            }
+
+            var deliveryCost = delivery === "Yes" ? 10 : 0;
+            var sizeCost = parseInt(sizeSelect.value);
+            var extraOrdersCost = 0;
+            extraOrdersCost += pepsiCheckbox.checked ? 3 : 0;
+            extraOrdersCost += cheeseCheckbox.checked ? 7 : 0;
+            extraOrdersCost += sauceCheckbox.checked ? 5 : 0;
+
+            var total = (sizeCost * quantity) + deliveryCost + extraOrdersCost;
+
+            totalLabel.innerHTML = "Total: " + total + " SR";
+
+            var summaryMessage = "Thank you for your order <br>" +
+                "You have selected Size: " + size + "<br>" +
+                "Quantity: " + quantity + "<br>" +
+                "Delivery: " + delivery + "<br>";
+
+            if (extraOrders.length > 0) {
+                summaryMessage += " Extra:<br>" + extraOrders.join("<br>");
+            }
+
+            summaryLabel.innerHTML = summaryMessage;
+        }
+    </script>
+</body>
+
+</html>

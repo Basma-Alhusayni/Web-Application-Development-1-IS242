@@ -1,0 +1,42 @@
+nav ul {
+    display: inline;
+    list-style-type: none;
+}
+
+nav ul li {
+    display: inline;
+}
+
+nav {
+    background-color: aquamarine;
+}
+
+article {
+    float: left;
+    width: 70%;
+    height: 500px;
+    background-color: blanchedalmond;
+}
+
+aside {
+    float: left;
+    width: 30%;
+    height: 500px;
+    background-color: cornsilk;
+}
+p {
+    visibility: hidden;
+}
+
+section:hover p {
+    visibility: visible;
+}
+
+aside:hover li {
+    color: green;
+}
+
+img:hover {
+    height: 200px;
+    width: 300px;
+}

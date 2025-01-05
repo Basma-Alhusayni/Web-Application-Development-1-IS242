@@ -1,0 +1,91 @@
+<html>
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    Enter Book Name <input type="text" id="tt" onchange="getprice()">
+    enter quantity <input type="number" id="num" size="5">
+    <button onclick="add()" class="btn btn-success">Buy</button>
+
+    <div id="notFoundMessage" style="color: black;"></div>
+    <br>
+    <div id="cartCaption"></div>
+    <table id="tbl" class="table table-border"></table>
+    <button onclick="checkout()" class="btn btn-success">Check out</button>
+
+    <script>
+        let pp = "";
+        let cartItems = [];
+
+        async function getprice() {
+            let response = await fetch("books.json");
+            let x = await response.json();
+            pp = "no book was found";
+            let found = false;
+            for (let i = 0; i < x.length; i++) {
+                if (document.getElementById("tt").value.toLowerCase() == x[i].itemname.toLowerCase()) {
+                    pp = x[i].price;
+                    des = x[i].description;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                pp = "no book was found";
+            }
+            document.getElementById("lbl1").innerHTML = pp;
+        }
+
+        function add() {
+            let itemName = document.getElementById("tt").value;
+            let quantity = document.getElementById("num").value;
+            if (pp === "no book was found") {
+                document.getElementById("notFoundMessage").innerHTML = "Book Not Found";
+                return;
+            }
+            let item = {
+                name: itemName,
+                price: pp,
+                description: des,
+                quant: quantity,
+            };
+            cartItems.push(item);
+            display();
+            document.getElementById("lbl1").innerHTML = "";
+            document.getElementById("tt").value = "";
+            document.getElementById("num").value = "";
+            document.getElementById("notFoundMessage").innerHTML = "";
+        }
+
+        function display() {
+    let ta = "<tr><th>Name</th><th>Description</th><th>Price</th><th>Quantity</th><th>Delete</th></tr>";
+    for (let i = 0; i < cartItems.length; i++) {
+        ta += "<tr><td>" + cartItems[i].name + "</td><td>" + cartItems[i].description + "</td><td>" + cartItems[i].price + "</td><td>" + cartItems[i].quant + "</td><td><button onclick=\"del('" + cartItems[i].name + "')\" class=\"btn btn-success\">Delete</button></td></tr>";
+    }
+    document.getElementById("cartCaption").innerHTML = "<caption>My Shopping Cart</caption>";
+    document.getElementById("tbl").innerHTML = ta;
+}
+
+        function del(nn) {
+            for (let i = 0; i < cartItems.length; i++) {
+                if (cartItems[i].name == nn) {
+                    cartItems.splice(i, 1);
+                }
+            }
+            display();
+        }
+
+        function checkout() {
+    let tot = 0;
+    for (let i = 0; i < cartItems.length; i++) {
+        tot += cartItems[i].price * cartItems[i].quant;
+    }
+    window.alert('You must pay: ' + tot);
+}
+    </script>
+</body>
+
+</html>

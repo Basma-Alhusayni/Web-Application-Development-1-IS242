@@ -1,0 +1,43 @@
+[
+    {
+      "itemname": "book1",
+      "description": "data science book",
+      "image": "book1.jpg",
+      "price": 100,
+      "cata": 1,
+      "author": "Andrew Park"
+    },
+    {
+      "itemname": "book2",
+      "description": "computer science book",
+      "image": "book2.jpg",
+      "price": 200,
+      "cata": 2,
+      "author": "Dheeraj Mehrotra"
+    },
+    {
+      "itemname": "book3",
+      "description": "data science book",
+      "image": "book3.jpg",
+      "price": 300,
+      "cata": 1,
+      "author": "Lillian Pierson"
+    },
+    {
+      "itemname": "book4",
+      "description": "fiction book",
+      "image": "book4.jpg",
+      "price": 150,
+      "cata": 3,
+      "author": "J.K Rowling"
+    },
+    {
+      "itemname": "book5",
+      "description": "history book",
+      "image": "book5.jpg",
+      "price": 250,
+      "cata": 4,
+      "author": "Thomas S. Kidd"
+    }
+  ]
+  

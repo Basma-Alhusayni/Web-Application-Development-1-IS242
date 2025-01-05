@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #eed3d5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .registration-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffffff;
+            box-shadow: 0px 0px 20px 5px rgba(0, 0, 0, 0.3);
+            padding: 50px;
+            width: 50%;
+            border-radius: 1rem;
+        }
+
+        #title {
+            padding-bottom: 5px;
+            text-align: center;
+            font-weight: bolder;
+            font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex-grow: 1;
+            margin: 0 5px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="registration-container">
+        <form id="RegForm" action="/process_Register" method="post">
+            <legend id="title">Registration</legend>
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="form-group">
+                <label for="password" id="passwordLabel">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password" id="confirmPasswordLabel">Confirm Password:</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="age" id="ageLabel">Age:</label>
+                <input type="number" class="form-control" id="age" name="age" placeholder="Enter your age" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth:</label>
+                <input type="date" class="form-control" id="dob" name="dob" required>
+            </div>
+            <div class="form-group form-check">
+                <input type="checkbox" class="form-check-input" id="agree" name="agree">
+                <label class="form-check-label" for="agree">I agree</label>
+            </div>
+            <div class="form-buttons">
+                <input type="submit" value="Submit" class="btn btn-success" />
+                <input type="reset" value="Reset" class="btn btn-danger" />
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById("confirm_password").onchange = validatePasswords;
+        document.getElementById("age").onchange = validateAge;
+
+        function validatePasswords() {
+            var password1 = document.getElementById("password").value;
+            var password2 = document.getElementById("confirm_password").value;
+            var passwordLabel = document.getElementById("passwordLabel");
+            var confirmPasswordLabel = document.getElementById("confirmPasswordLabel");
+
+            if (password2 !== password1) {
+                alert("Passwords don't match");
+                passwordLabel.style.color = "red";
+                confirmPasswordLabel.style.color = "red";
+            } else {
+                passwordLabel.style.color = "";
+                confirmPasswordLabel.style.color = "";
+            }
+        }
+
+        function validateAge() {
+            var age = parseInt(document.getElementById("age").value);
+            var ageLabel = document.getElementById("ageLabel");
+
+            if (age < 11) {
+                alert("You must be above 10 years old");
+                ageLabel.style.color = "red";
+            } else {
+                ageLabel.style.color = "";
+            }
+        }
+
+        document.getElementById("RegForm").onsubmit = function (e) {
+            var password1 = document.getElementById("password").value;
+            var password2 = document.getElementById("confirm_password").value;
+            var age = parseInt(document.getElementById("age").value);
+            var agreeCheckbox = document.getElementById("agree");
+            var agreeLabel = document.querySelector('[for="agree"]');
+
+            if (password2 !== password1) {
+                e.preventDefault();
+                validatePasswords();
+            }
+
+            if (age < 11) {
+                e.preventDefault();
+                validateAge();
+            }
+
+            if (!agreeCheckbox.checked) {
+                e.preventDefault();
+                alert("Please agree to the terms");
+                agreeLabel.style.color = "red";
+            } else {
+                agreeLabel.style.color = "";
+            }
+        }
+    </script>
+</body>
+
+</html>

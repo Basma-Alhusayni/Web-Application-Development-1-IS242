@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Buy</title>
+    <script src="navbar.js" defer></script>
+    <script>
+        function updateCartBadge() {
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            const itemNumbers = cartItems.length;
+            const cartBadge = document.getElementById('cartBadge');
+            if (cartBadge) {
+                cartBadge.textContent = itemNumbers;
+            }
+        }
+       document.addEventListener("DOMContentLoaded", function() {
+            fetch('/getUserRole')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.role === 'customer') {
+                        loadCustomerNavbar();
+                    } else if (data.role === 'admin') {
+                        loadAdminNavbar();
+                    }
+                })
+                .catch(error => console.error('Error fetching user role:', error));
+        });
+    </script>
+    <style>
+        body {
+            padding-top: 70px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div id="navbar"></div>
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Buy</h3>
+                <form id="buyForm">
+                    <div class="form-group">
+                        <label for="paymentOption">Payment Option:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentOption" id="creditCard"
+                                value="creditCard" checked>
+                            <label class="form-check-label" for="creditCard">
+                                <i class="fas fa-credit-card"></i> Credit Card
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="paymentOption" id="paypal"
+                                value="paypal">
+                            <label class="form-check-label" for="paypal">
+                                <i class="fab fa-cc-paypal"></i> PayPal
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalValue">Total Value:</label>
+                        <input type="text" class="form-control" id="totalValue" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="note">Note:</label>
+                        <textarea class="form-control" id="note" rows="3" placeholder="Write your notes for your order"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <video width="100%" autoplay loop>
+                    <source src="/vid/purchasing.mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <script src="cartBadge.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const totalValueInput = document.getElementById("totalValue");
+            const buyForm = document.getElementById("buyForm");
+
+            const totalValue = localStorage.getItem("total");
+            if (totalValue) {
+                totalValueInput.value = totalValue;
+            }
+
+            buyForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Total Pay: ${totalValueInput.value} SAR, Payment Option: ${document.querySelector('input[name="paymentOption"]:checked').value}, Note: ${document.getElementById("note").value}`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const paymentOption = document.querySelector('input[name="paymentOption"]:checked').value;
+                        const note = document.getElementById("note").value;
+                        const data = {
+                            custname: "Your Customer Name",
+                            total: totalValueInput.value,
+                            ordate: new Date().toISOString().slice(0, 10),
+                            paymentOption: paymentOption,
+                            note: note
+                        };
+
+                        fetch('/saveOrder', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(data)
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                totalValueInput.value = '0';
+                                localStorage.setItem("total", '0');
+
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Your order has been successfully placed.',
+                                    icon: 'success',
+                                    confirmButtonText: 'Ok'
+                                }).then(() => {
+                                    window.location.href = '/home';
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'An error occurred while processing your order.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Ok'
+                                });
+                            });
+                    }
+                });
+            });
+        });
+    </script>
+
+</body>
+
+</html>

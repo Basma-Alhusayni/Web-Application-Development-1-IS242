@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>LAB7</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .paragraph {
+            color: black;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #paragraph1 {
+            background-color: #530091;
+        }
+
+        #paragraph2 {
+            background-color: #a037ff;
+        }
+
+        #paragraph3 {
+            background-color: #e482df;
+        }
+    </style>
+</head>
+
+<body>
+    <p class="paragraph" id="paragraph1">Paragraph 1</p>
+    <p class="paragraph" id="paragraph2">Paragraph 2</p>
+    <p class="paragraph" id="paragraph3">Paragraph 3</p>
+
+    <label for="textfield">Enter name </label>
+    <input type="text" id="textfield">
+    <br><br>
+    <button id="fade">Fade</button>
+    <button id="slide">Slide</button>
+
+    <script>
+        $(document).ready(function () {
+            $('#textfield').on('keyup', function (event) {
+                var text = $(this).val();
+                if (event.keyCode === 13) {
+                    $(this).val(text.toUpperCase());
+                }
+            });
+
+            $('#fade').on('click', function () {
+                $('#paragraph3').fadeTo(1000, 0.5);
+            });
+
+
+            $('#slide').on('click', function () {
+                $('#paragraph2').slideToggle();
+            });
+
+            $('.paragraph').hover(function () {
+                $(this).css("color", "white");
+            });
+        });
+    </script>
+
+</body>
+
+</html>
